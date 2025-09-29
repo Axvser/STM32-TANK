@@ -31,7 +31,6 @@ void ProcessTankValues(double values[], uint8_t count)
     gun.ah = values[2];   // 水平舵机角度
     gun.av = values[3];   // 垂直舵机角度
     gun.fire = values[4]; // 火控
-    printf("Converted : [ %lf , %lf , %lf , %lf , %lf ]\r\n",values[0],values[1],values[2],values[3],values[4]);
 }
 
 ////////// 主函数 /////////////
@@ -42,7 +41,7 @@ int main(void)
 
     // 初始化系统模块
     motor = Motor_Init(1679, 0);
-    gun = Gun_Init(839, 2);
+    gun = Gun_Init(19999, 83);
     tcpserver = TcpServer_Init("STM32-Tank-Service", "88888888", "192.168.6.6", "255.255.255.0", 8080);
     TcpServer_Build(&tcpserver);
 

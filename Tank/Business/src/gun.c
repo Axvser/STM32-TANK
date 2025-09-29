@@ -8,19 +8,17 @@ GunContext Gun_Init(uint16_t arr, uint16_t psc)
 
 	// 时钟使能
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOB, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 	// 初始化PC6和PC7为攻击模块的转向PWM源 | PB1为开火PWM源
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_TIM8);
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_TIM8);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource1, GPIO_AF_TIM8);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_PinAFConfig(GPIOC, GPIO_PinSource8, GPIO_AF_TIM8);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;	   // 复用
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; // 高速
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	   // 推挽
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;   // 无上下拉
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	// 设置在下一个更新事件装入活动的自动重装载寄存器周期的值
 	TIM_TimeBaseStructure.TIM_Period = arr;
