@@ -3,11 +3,7 @@
 #ifndef __ESP01S_H
 #define __ESP01S_H
 
-#define ESP01S_USART USART3
-#define ESP01S_IRQChannel USART3_IRQn
-
 #define ESP01S_DEBUG 1
-#define ESP01S_DEBUG_USART USART1
 
 /// @brief ESP01S的数据处理回调
 /// @param data 数据指针
@@ -40,6 +36,13 @@ void ESP01S_CWMODE(uint8_t mode);
 /// @param mode 0 表示Station
 void ESP01S_CWDHCP(uint8_t operate, uint8_t mode);
 
+/// @brief  设置ESP-01S的AP模式参数（SSID、密码等）
+/// @param  ssid: 想要设置的Wi-Fi名称
+/// @param  pwd: 密码，至少8个字符
+/// @param  channel: 信道（1-13）
+/// @param  ecn: 加密方式 (0:OPEN, 2:WPA_PSK, 3:WPA2_PSK, 4:WPA_WPA2_PSK)
+void ESP01S_CWSAP(const char *ssid, const char *pwd, uint8_t channel, uint8_t ecn);
+
 /// @brief 连接至指定WIFI
 /// @param ssid WIFI名称
 /// @param pwd WIFI密码
@@ -60,12 +63,9 @@ void ESP01S_CIPMODE(uint8_t mode);
 void ESP01S_CIPMUX(uint8_t allowMulti);
 
 /// @brief 配置服务器
-/// @param mode 0/1 关闭/建立服务器
-/// @param param2 mode0/mode1 是否关闭所有客户端/端口号
-/// @param type 通讯类型 [ TCP，TCPv6，SSL，SSLv6 ]
-/// @param caEnable 是否启用CA认证
-/// @param port 监听哪些端口 [ 0. 所有 | 1. station | 2. AP | 3. 以太网 ]
-void ESP01S_CIPSERVER(uint8_t mode, uint8_t param2, const char *type, uint8_t caEnable, uint8_t port);
+/// @param mode 模式
+/// @param port 端口
+void ESP01S_CIPSERVER(uint8_t mode, uint16_t port);
 
 /// @brief 发送数据到指定连接
 /// @param linkID 连接ID（0-4）

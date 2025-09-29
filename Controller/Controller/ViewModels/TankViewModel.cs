@@ -9,11 +9,11 @@ using VeloxDev.Core.MVVM;
 
 namespace Controller.ViewModels;
 
-[MonoBehaviour(60)]
+[MonoBehaviour(120)]
 public partial class TankViewModel
 {
     /// <summary>
-    /// 以 60FPS 检测是否发生设备状态更新,若是则发送数据到 ESP-01S
+    /// 以 120FPS 检测是否发生设备状态更新,若是则发送数据到 ESP-01S
     /// </summary>
     partial void Update()
     {
@@ -26,7 +26,7 @@ public partial class TankViewModel
      * 做一些必要的缓存以提升高频传输的性能
      */
     
-    private const string EspIp = "192.168.5.1";
+    private const string EspIp = "192.168.6.6";
     private const int EspPort = 8080;
     private TcpClient? _tcpclient = new TcpClient();
     private readonly StringBuilder _msgbuilder = new StringBuilder();

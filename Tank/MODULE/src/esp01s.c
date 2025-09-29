@@ -5,23 +5,23 @@ void ESP01S_Send(const char *str)
     const char *p = str;
     while (p && *p != '\0')
     {
-        while (USART_GetFlagStatus(ESP01S_USART, USART_FLAG_TC) == RESET)
+        while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET)
             ;
-        USART_SendData(ESP01S_USART, *p);
+        USART_SendData(USART3, *p);
         p++;
     }
 }
 
 void USART3_IRQHandler(void)
 {
-    if (USART_GetITStatus(ESP01S_USART, USART_IT_RXNE) == SET)
+    if (USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
     {
-        uint16_t tmp = USART_ReceiveData(ESP01S_USART);
+        uint16_t tmp = USART_ReceiveData(USART3);
         ESP01S_DataHandler(tmp);
-        while (USART_GetFlagStatus(ESP01S_USART, USART_FLAG_TC) == RESET)
+        while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET)
             ;
 #if ESP01S_DEBUG
-        USART_SendData(ESP01S_DEBUG_USART, tmp);
+        USART_SendData(USART1, tmp);
 #endif
     }
 }
@@ -49,16 +49,16 @@ void ESP01S_Init(uint32_t baud)
     USART_InitStructure.USART_Parity = USART_Parity_No;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    USART_Init(ESP01S_USART, &USART_InitStructure);
+    USART_Init(USART3, &USART_InitStructure);
 
-    USART_ITConfig(ESP01S_USART, USART_IT_RXNE, ENABLE);
-    NVIC_InitStructure.NVIC_IRQChannel = ESP01S_IRQChannel;
+    USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+    NVIC_InitStructure.NVIC_IRQChannel =  USART3_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 
-    USART_Cmd(ESP01S_USART, ENABLE);
+    USART_Cmd(USART3, ENABLE);
 }
 
 void ESP01S_RST(void)
@@ -85,10 +85,18 @@ void ESP01S_CWMODE(uint8_t mode)
     ESP01S_Send(buffer);
 }
 
-void ESP01S_CWDHCP(uint8_t operate, uint8_t mode)
+void ESP01S_CWDHCP(uint8_t mode, uint8_t enable)
 {
-    char buffer[32];
-    sprintf(buffer, "AT+CWDHCP=%d,%d\r\n", operate, mode);
+    char buffer[32] = {'\0'};
+    sprintf(buffer, "AT+CWDHCP=%d,%d\r\n", mode, enable);
+    ESP01S_Send(buffer);
+}
+
+void ESP01S_CWSAP(const char *ssid, const char *pwd, uint8_t channel, uint8_t ecn)
+{
+    char buffer[128] = {'\0'};
+    // 构造AT指令，例如：AT+CWSAP="My_ESP","12345678",5,3\r\n
+    sprintf(buffer, "AT+CWSAP=\"%s\",\"%s\",%d,%d\r\n", ssid, pwd, channel, ecn);
     ESP01S_Send(buffer);
 }
 
@@ -129,10 +137,17 @@ void ESP01S_CIPMUX(uint8_t allowMulti)
     ESP01S_Send(buffer);
 }
 
-void ESP01S_CIPSERVER(uint8_t mode, uint8_t param2, const char *type, uint8_t caEnable, uint8_t port)
+void ESP01S_CIPSERVER(uint8_t mode, uint16_t port)
 {
     char buffer[32] = {'\0'};
-    sprintf(buffer, "AT+CIPSERVER=%d,%d,\"%s\",%d,%d\r\n", mode, param2, type, caEnable, port);
+    if (mode == 1)
+    {
+        sprintf(buffer, "AT+CIPSERVER=%d,%d\r\n", mode, port);
+    }
+    else
+    {
+        sprintf(buffer, "AT+CIPSERVER=%d\r\n", mode);
+    }
     ESP01S_Send(buffer);
 }
 

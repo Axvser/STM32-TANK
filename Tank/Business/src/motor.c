@@ -65,6 +65,7 @@ void Motor_Update(void *context)
 	MotorContext *motor = (MotorContext *)context;
 	if (0 == motor)
 		return;
+		
 	// ×ó²àÂÄ´ø
 	if (motor->vl > 0)
 	{

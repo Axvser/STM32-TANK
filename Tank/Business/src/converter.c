@@ -1,10 +1,6 @@
 #include "system.h"
 #include "converter.h"
 
-static char tankBuffer[256];
-static uint16_t bufferIndex = 0;
-static uint8_t inTankData = 0;
-
 double StrToDouble(const char *str)
 {
     double integer = 0.0, fraction = 0.0;
@@ -43,96 +39,175 @@ double StrToDouble(const char *str)
 
 void ParseTankData(uint16_t data)
 {
-    static char currentChar;
-    static uint8_t dataCount = 0;
-    static char valueBuffer[16];
-    static uint8_t valueIndex = 0;
-    static double tankValues[5];
+    char ch = (char)(data & 0x00FF);
 
-    currentChar = (char)data;
+    static enum {
+        STATE_SEARCH_IPD,    // 搜索IPD前缀
+        STATE_IN_IPD,        // 处理IPD头部
+        STATE_SEARCH_HEADER, // 搜索数据包头部
+        STATE_IN_HEADER,     // 处理数据包头部
+        STATE_IN_DATA,       // 处理数据
+        STATE_IN_TAIL        // 处理尾部
+    } state = STATE_SEARCH_IPD;
 
-    // 检测数据开始标记
-    if (!inTankData)
+    static char buffer[512]; // 更大的缓冲区
+    static uint16_t buf_index = 0;
+    static double values[5];
+    static uint8_t value_count = 0;
+    static char num_buf[16];
+    static uint8_t num_index = 0;
+    static uint8_t ipd_length = 0;
+    static uint8_t ipd_received = 0;
+
+    switch (state)
     {
-        if (currentChar == 'C')
+    case STATE_SEARCH_IPD:
+        if (ch == '+')
         {
-            bufferIndex = 0;
-            tankBuffer[bufferIndex++] = currentChar;
+            buffer[0] = ch;
+            buf_index = 1;
+            state = STATE_IN_IPD;
         }
-        else if (bufferIndex > 0 && bufferIndex < 10)
-        {
-            tankBuffer[bufferIndex++] = currentChar;
-            tankBuffer[bufferIndex] = '\0';
+        break;
 
-            // 检查是否匹配"CSharpST{"
-            if (bufferIndex == 9 && strcmp(tankBuffer, "CSharpST{") == 0)
+    case STATE_IN_IPD:
+        if (buf_index < sizeof(buffer) - 1)
+        {
+            buffer[buf_index++] = ch;
+        }
+
+        // 检查是否完成IPD头部 "+IPD,0,129:"
+        if (ch == ':')
+        {
+            buffer[buf_index] = '\0';
+
+            // 解析数据长度
+            char *comma1 = strchr(buffer, ',');
+            char *comma2 = strchr(comma1 + 1, ',');
+            if (comma1 && comma2)
             {
-                inTankData = 1;
-                dataCount = 0;
-                valueIndex = 0;
-                memset(tankValues, 0, sizeof(tankValues));
+                ipd_length = StrToDouble(comma2 + 1);
+                ipd_received = 0;
+                buf_index = 0;
+                state = STATE_SEARCH_HEADER;
+            }
+            else
+            {
+                state = STATE_SEARCH_IPD;
+                buf_index = 0;
             }
         }
-        else
+        break;
+
+    case STATE_SEARCH_HEADER:
+        if (ch == 'C')
         {
-            bufferIndex = 0;
+            buffer[0] = ch;
+            buf_index = 1;
+            state = STATE_IN_HEADER;
         }
-        return;
-    }
+        ipd_received++;
 
-    // 处理Tank数据内容
-    if (inTankData)
-    {
-        // 检测数据结束标记
-        if (currentChar == 'C' && valueIndex >= 7)
+        // 如果已经接收完IPD指定的长度，回到搜索IPD状态
+        if (ipd_received >= ipd_length)
         {
-            char checkBuffer[10];
-            strncpy(checkBuffer, &tankBuffer[bufferIndex - 7], 8);
-            checkBuffer[8] = '\0';
+            state = STATE_SEARCH_IPD;
+            buf_index = 0;
+        }
+        break;
 
-            if (strcmp(checkBuffer, "CSharpED") == 0)
+    case STATE_IN_HEADER:
+        if (buf_index < sizeof(buffer) - 1)
+        {
+            buffer[buf_index++] = ch;
+        }
+        ipd_received++;
+
+        if (buf_index == 9)
+        {
+            if (strncmp(buffer, "CSharpST{", 9) == 0)
             {
-                // 数据包接收完成，处理最后一个值
-                if (valueIndex > 0 && dataCount < 5)
+                state = STATE_IN_DATA;
+                value_count = 0;
+                num_index = 0;
+            }
+            else
+            {
+                state = STATE_SEARCH_HEADER;
+                buf_index = 0;
+            }
+        }
+
+        if (ipd_received >= ipd_length)
+        {
+            state = STATE_SEARCH_IPD;
+            buf_index = 0;
+        }
+        break;
+
+    case STATE_IN_DATA:
+        if (buf_index < sizeof(buffer) - 1)
+        {
+            buffer[buf_index++] = ch;
+        }
+        ipd_received++;
+
+        if (ch == ',' || ch == '}')
+        {
+            if (num_index > 0 && value_count < 5)
+            {
+                num_buf[num_index] = '\0';
+                values[value_count++] = StrToDouble(num_buf);
+                num_index = 0;
+            }
+
+            if (ch == '}')
+            {
+                state = STATE_IN_TAIL;
+            }
+        }
+        else if ((ch >= '0' && ch <= '9') || ch == '.' || ch == '-')
+        {
+            if (num_index < sizeof(num_buf) - 1)
+            {
+                num_buf[num_index++] = ch;
+            }
+        }
+
+        if (ipd_received >= ipd_length)
+        {
+            state = STATE_SEARCH_IPD;
+            buf_index = 0;
+        }
+        break;
+
+    case STATE_IN_TAIL:
+        if (buf_index < sizeof(buffer) - 1)
+        {
+            buffer[buf_index++] = ch;
+        }
+        ipd_received++;
+
+        // 检查是否完成尾部 "CSharpED"
+        if (buf_index >= 8)
+        {
+            if (strncmp(&buffer[buf_index - 8], "CSharpED", 8) == 0)
+            {
+                if (value_count == 5)
                 {
-                    valueBuffer[valueIndex] = '\0';
-                    tankValues[dataCount++] = StrToDouble(valueBuffer);
+                    ProcessTankValues(values, value_count);
                 }
-
-                ProcessTankValues(tankValues, dataCount);
-
-                inTankData = 0;
-                bufferIndex = 0;
-                return;
+                // 继续处理可能的下一个数据包
+                state = STATE_SEARCH_HEADER;
+                buf_index = 0;
             }
         }
 
-        // 处理数据内容
-        if (currentChar == ',' || currentChar == '}')
+        if (ipd_received >= ipd_length)
         {
-            // 完成一个值的解析
-            if (valueIndex > 0 && dataCount < 5)
-            {
-                valueBuffer[valueIndex] = '\0';
-                tankValues[dataCount++] = StrToDouble(valueBuffer);
-                valueIndex = 0;
-            }
+            state = STATE_SEARCH_IPD;
+            buf_index = 0;
         }
-        else if ((currentChar >= '0' && currentChar <= '9') ||
-                 currentChar == '.' || currentChar == '-')
-        {
-            // 收集数值字符
-            if (valueIndex < 15 && dataCount < 5)
-            {
-                valueBuffer[valueIndex++] = currentChar;
-            }
-        }
-
-        // 保存到缓冲区（用于检测结束标记）
-        if (bufferIndex < 255)
-        {
-            tankBuffer[bufferIndex++] = currentChar;
-            tankBuffer[bufferIndex] = '\0';
-        }
+        break;
     }
 }
