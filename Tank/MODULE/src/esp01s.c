@@ -52,7 +52,7 @@ void ESP01S_Init(uint32_t baud)
     USART_Init(USART3, &USART_InitStructure);
 
     USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-    NVIC_InitStructure.NVIC_IRQChannel =  USART3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -100,19 +100,17 @@ void ESP01S_CWSAP(const char *ssid, const char *pwd, uint8_t channel, uint8_t ec
     ESP01S_Send(buffer);
 }
 
-void ESP01S_CWJAP(const char *ssid, const char *pwd, const char *bssid, uint32_t timeout)
+void ESP01S_CWJAP(const char *ssid, const char *pwd)
 {
     char buffer[128] = {'\0'};
-    if (bssid == NULL || strlen(bssid) != 17)
-    {
-        // 不指定 BSSID，直接设置超时
-        sprintf(buffer, "AT+CWJAP=\"%s\",\"%s\",0,%d\r\n", ssid, pwd, timeout);
-    }
-    else
-    {
-        // 指定 BSSID 和超时
-        sprintf(buffer, "AT+CWJAP=\"%s\",\"%s\",\"%s\",%d\r\n", ssid, pwd, bssid, timeout);
-    }
+    sprintf(buffer, "AT+CWJAP=\"%s\",\"%s\"\r\n", ssid, pwd);
+    ESP01S_Send(buffer);
+}
+
+void ESP01S_CIPSTA(const char *ip, const char *gateway, const char *netmask)
+{
+    char buffer[128] = {'\0'};
+    sprintf(buffer, "AT+CIPSTA=\"%s\",\"%s\",\"%s\"\r\n", ip, gateway, netmask);
     ESP01S_Send(buffer);
 }
 
@@ -153,8 +151,20 @@ void ESP01S_CIPSERVER(uint8_t mode, uint16_t port)
 
 void ESP01S_CIPSEND(uint8_t linkID, const char *msg)
 {
-    ESP01S_CIPMODE(1);
-    vTaskDelay(100);
+    char buffer[32] = {'\0'};
+
+    // 先发送AT+CIPSEND指令指定数据长度
+    if (linkID == 0)
+    {
+        sprintf(buffer, "AT+CIPSEND=%d\r\n", strlen(msg));
+    }
+    else
+    {
+        sprintf(buffer, "AT+CIPSEND=%d,%d\r\n", linkID, strlen(msg));
+    }
+
+    ESP01S_Send(buffer);
+
+    // 发送实际数据
     ESP01S_Send(msg);
-    ESP01S_Send("+++\r\n");
 }

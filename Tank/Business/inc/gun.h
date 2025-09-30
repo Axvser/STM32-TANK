@@ -2,6 +2,7 @@
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_tim.h"
+#include "bitband.h"
 
 #ifndef __GUN_H
 #define __GUN_H
@@ -17,6 +18,7 @@ typedef struct
     double ah;
     double av;
     double fire;
+    uint8_t changed;
 } GunContext;
 
 /// @brief ¹¥»÷Ä£¿é³õÊ¼»¯

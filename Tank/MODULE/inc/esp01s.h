@@ -28,13 +28,13 @@ void ESP01S_RESTORE(void);
 void ESP01S_UART_CUR(uint32_t baud);
 
 /// @brief 设定ESP01S的工作模式
-/// @param mode 0 表示Station
+/// @param mode 1 表示Station
 void ESP01S_CWMODE(uint8_t mode);
 
-/// @brief 是否开启DHCP
-/// @param operate 0 表示禁用
-/// @param mode 0 表示Station
-void ESP01S_CWDHCP(uint8_t operate, uint8_t mode);
+/// @brief 设置是否启用DHCP
+/// @param mode 模式 (1:Station, 2:SoftAP, 3:Both)
+/// @param enable 是否启用 (0:禁用, 1:启用)
+void ESP01S_CWDHCP(uint8_t mode, uint8_t enable);
 
 /// @brief  设置ESP-01S的AP模式参数（SSID、密码等）
 /// @param  ssid: 想要设置的Wi-Fi名称
@@ -46,7 +46,13 @@ void ESP01S_CWSAP(const char *ssid, const char *pwd, uint8_t channel, uint8_t ec
 /// @brief 连接至指定WIFI
 /// @param ssid WIFI名称
 /// @param pwd WIFI密码
-void ESP01S_CWJAP(const char *ssid, const char *pwd, const char *bssid, uint32_t timeout);
+void ESP01S_CWJAP(const char *ssid, const char *pwd);
+
+/// @brief 配置STA
+/// @param ip IP地址
+/// @param gateway 网关
+/// @param netmask 子网掩码
+void ESP01S_CIPSTA(const char *ip, const char *gateway, const char *netmask);
 
 /// @brief 配置AP
 /// @param ip IP地址

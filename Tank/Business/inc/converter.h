@@ -5,6 +5,8 @@
 #ifndef __CONVERTER_H
 #define __CONVERTER_H
 
+#define DEBUG_CONVERTER 1
+
 extern void ProcessTankValues(double values[], uint8_t count);
 
 double StrToDouble(const char *str);

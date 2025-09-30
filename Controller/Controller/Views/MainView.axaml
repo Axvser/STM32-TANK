@@ -10,16 +10,19 @@
         <Style Selector="Slider">
             <Setter Property="Background" Value="White" />
             <Setter Property="Foreground" Value="Cyan" />
-            <Setter Property="Minimum" Value="-1" />
-            <Setter Property="Maximum" Value="1" />
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Styles>
     <UserControl.DataContext>
         <vm:MainViewModel />
     </UserControl.DataContext>
-    <Grid RowDefinitions="*,*">
-        <Slider Grid.Row="0" Value="{Binding Tank.LeftTrack}" />
-        <Slider Grid.Row="1" Value="{Binding Tank.RightTrack}" />
+    <Grid RowDefinitions="*,*,*,*,*">
+        <Slider Grid.Row="0" Minimum="-1" Maximum="1" Value="{Binding Tank.LeftTrack}" />
+        <Slider Grid.Row="1" Minimum="-1" Maximum="1" Value="{Binding Tank.RightTrack}" />
+        <Slider Grid.Row="2" Minimum="0" Maximum="1" Value="{Binding Tank.TurretH}" />
+        <Slider Grid.Row="3" Minimum="0" Maximum="1" Value="{Binding Tank.TurretV}" />
+        <Button Grid.Row="4" Content="Fire"
+                Background="#AAFFFFFF"
+                Click="Button_OnClick"/>
     </Grid>
 </UserControl>
