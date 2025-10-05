@@ -86,7 +86,7 @@ void RunTime_Run(void)
         xTaskCreate(
             TaskGroup_Executor,
             name,
-            configMINIMAL_STACK_SIZE * 4,
+            configMINIMAL_STACK_SIZE,
             (void *)group,
             group->priority,
             &group->taskHandle);

@@ -81,9 +81,9 @@ void TcpServer_Build_STA(void *context)
     ESP01S_CWJAP(tcp->ssid, tcp->pwd); // 使用CWJAP连接路由器
     delay_ms(3000);                    // 连接需要更多时间
 
-    // // 5. 如果需要静态IP，使用CIPSTA而不是CIPAP
-    // ESP01S_CIPSTA(tcp->ip, tcp->gw, tcp->mask);
-    // delay_ms(1000);
+    // 5. 如果需要静态IP，使用CIPSTA而不是CIPAP
+    ESP01S_CIPSTA(tcp->ip, tcp->gw, tcp->mask);
+    delay_ms(1000);
 
     // 6. 启用多连接
     ESP01S_CIPMUX(1);

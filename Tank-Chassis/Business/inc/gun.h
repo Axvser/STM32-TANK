@@ -18,7 +18,6 @@ typedef struct
     double ah;
     double av;
     double fire;
-    uint8_t changed;
 } GunContext;
 
 /// @brief ¹¥»÷Ä£¿é³õÊ¼»¯

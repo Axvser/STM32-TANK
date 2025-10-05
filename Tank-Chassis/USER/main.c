@@ -29,9 +29,8 @@ void ProcessTankValues(double values[], uint8_t count)
     motor.vl = values[0]; // 左侧履带速度
     motor.vr = values[1]; // 右侧履带速度
     gun.ah = values[2];   // 水平舵机角度
-    gun.av = values[3];   // 垂直舵机角度
-    gun.fire = values[4]; // 火控
-    gun.changed = 1;
+    Motor_Update(&motor);
+    Gun_Update(&gun);
 #if DEBUG_CONVERTER
     printf("Updated [ vl:%lf , vr:%lf , ah:%lf , av:%lf , fire:%lf ]\r\n", values[0], values[1], values[2], values[3], values[4]);
 #endif
@@ -53,7 +52,7 @@ int main(void)
     RunTime_Init();
 
     // 60FPS - 实时性要求高
-    RunTime_MonoBehaviour(60, 2, Motor_Update, &motor, Gun_Update, &gun);
+    RunTime_MonoBehaviour(60, 0, 0);
     // 20FPS - 实时性要求中等
     RunTime_MonoBehaviour(20, 0);
     // 1FPS - 实时性要求低
