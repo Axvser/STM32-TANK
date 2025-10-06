@@ -12,6 +12,7 @@ typedef struct
     char gw[32];
     char mask[32];
     uint16_t port;
+    int16_t counter;
 } TcpServerContext;
 
 /// @brief 初始化TCP服务器

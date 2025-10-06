@@ -1,13 +1,13 @@
-#include "stm32f4xx.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_tim.h"
+#include "stm32f10x.h"
+#include "stm32f10x_gpio.h"
+#include "stm32f10x_rcc.h"
+#include "stm32f10x_tim.h"
 #include "bitband.h"
 
 #ifndef __GUN_H
 #define __GUN_H
 
-/// @brief 炮台上下文
+/// @brief 攻击模块上下文
 /// @param arr TIM自动重装值
 /// @param ah 水平欧拉转角[0.360]
 /// @param av 垂直欧拉转角[45,135]
@@ -20,18 +20,14 @@ typedef struct
     double fire;
 } GunContext;
 
-/// @brief 炮台初始化
+/// @brief 攻击模块初始化
 /// @param arr 自动重装值
 /// @param psc 时钟预分频数
-/// @return 炮台上下文
+/// @return 攻击模块上下文
 GunContext Gun_Init(uint16_t arr, uint16_t psc);
 
-/// @brief 更新炮台状态
-/// @param context 炮台上下文
+/// @brief 更新攻击模块状态
+/// @param context 攻击模块上下文
 void Gun_Update(void *context);
-
-/// @brief 静置炮台
-/// @param context 炮台上下文
-void Gun_RST(void *context);
 
 #endif

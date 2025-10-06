@@ -27,4 +27,8 @@ MotorContext Motor_Init(uint16_t arr, uint16_t psc);
 /// @param context 电机上下文
 void Motor_Update(void *context);
 
+/// @brief 静置电机
+/// @param context 电机上下文
+void Motor_RST(void *context);
+
 #endif

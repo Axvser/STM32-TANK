@@ -21,7 +21,7 @@ void TcpServer_Build_AP(void *context)
     printf("[AP] Start TCP Service Building ...\r\n");
 
     // 1. 恢复出厂设置
-    ESP01S_RST();
+    ESP01S_RESTORE();
     delay_ms(2000);
 
     // 2. 设置为AP模式
@@ -66,7 +66,7 @@ void TcpServer_Build_STA(void *context)
     printf("[STA] Start TCP Service Building ...\r\n");
 
     // 1. 恢复出厂设置
-    ESP01S_RST();
+    ESP01S_RESTORE();
     delay_ms(2000);
 
     // 2. 设置为STA模式（客户端模式）

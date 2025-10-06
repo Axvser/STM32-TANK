@@ -65,7 +65,7 @@ void Motor_Update(void *context)
 	MotorContext *motor = (MotorContext *)context;
 	if (0 == motor)
 		return;
-		
+
 	// ×ó²àÂÄ´ø
 	if (motor->vl > 0)
 	{
@@ -105,4 +105,15 @@ void Motor_Update(void *context)
 		TB6612FNG_BN2 = 0;
 		TIM_SetCompare2(TIM1, 0);
 	}
+}
+
+void Motor_RST(void *context)
+{
+	MotorContext *motor = (MotorContext *)context;
+	if (0 == motor)
+		return;
+
+	motor->vl = 0;
+	motor->vr = 0;
+	Motor_Update(motor);
 }

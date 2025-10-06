@@ -673,6 +673,11 @@
               <FileType>1</FileType>
               <FilePath>..\BISUNESS\src\tcpserver.c</FilePath>
             </File>
+            <File>
+              <FileName>gun.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BISUNESS\src\gun.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

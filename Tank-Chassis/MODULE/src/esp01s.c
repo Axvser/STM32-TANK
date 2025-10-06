@@ -71,6 +71,20 @@ void ESP01S_RESTORE(void)
     ESP01S_Send("AT+RESTORE\r\n");
 }
 
+void ESP01S_CWHOSTNAME(const char *name)
+{
+    char buffer[64] = {'\0'};
+    sprintf(buffer, "AT+CWHOSTNAME=\"%s\"\r\n", name);
+    ESP01S_Send(buffer);
+}
+
+void ESP01S_CIPSTAMAC_CUR(const char *mac)
+{
+    char buffer[128] = {'\0'};
+    sprintf(buffer, "AT+CIPSTAMAC_CUR=\"%s\"\r\n", mac);
+    ESP01S_Send(buffer);
+}
+
 void ESP01S_UART_CUR(uint32_t baud)
 {
     char buffer[64] = {'\0'};
@@ -102,22 +116,22 @@ void ESP01S_CWSAP(const char *ssid, const char *pwd, uint8_t channel, uint8_t ec
 
 void ESP01S_CWJAP(const char *ssid, const char *pwd)
 {
-    char buffer[128] = {'\0'};
+    char buffer[64] = {'\0'};
     sprintf(buffer, "AT+CWJAP=\"%s\",\"%s\"\r\n", ssid, pwd);
     ESP01S_Send(buffer);
 }
 
-void ESP01S_CIPSTA(const char *ip, const char *gateway, const char *netmask)
+void ESP01S_CIPSTA(const char *ip)
 {
-    char buffer[128] = {'\0'};
-    sprintf(buffer, "AT+CIPSTA=\"%s\",\"%s\",\"%s\"\r\n", ip, gateway, netmask);
+    char buffer[32] = {'\0'};
+    sprintf(buffer, "AT+CIPSTA=\"%s\"\r\n", ip);
     ESP01S_Send(buffer);
 }
 
-void ESP01S_CIPAP(const char *ip, const char *gateway, const char *netmask)
+void ESP01S_CIPAP(const char *ip)
 {
-    char buffer[128] = {'\0'};
-    sprintf(buffer, "AT+CIPAP=\"%s\",\"%s\",\"%s\"\r\n", ip, gateway, netmask);
+    char buffer[32] = {'\0'};
+    sprintf(buffer, "AT+CIPAP=\"%s\"\r\n", ip);
     ESP01S_Send(buffer);
 }
 

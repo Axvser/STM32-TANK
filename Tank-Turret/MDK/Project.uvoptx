@@ -812,7 +812,7 @@
 
   <Group>
     <GroupName>BUSINESS</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -839,6 +839,19 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\BISUNESS\src\tcpserver.c</PathWithFileName>
       <FilenameWithoutPath>tcpserver.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>9</GroupNumber>
+      <FileNumber>46</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\BISUNESS\src\gun.c</PathWithFileName>
+      <FilenameWithoutPath>gun.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -17,15 +17,18 @@ public partial class TankViewModel
     /// </summary>
     partial void Update()
     {
-        if (!IsContextChanged) return;
+        _connectCounter++;
+        if (!IsContextChanged && _connectCounter < 30) return;
         IsContextChanged = false;
+        _connectCounter = 0;
         PostCommand.Execute(null);
     }
 
     /* Fields
-     * 做一些必要的缓存以提升高频传输的性能
+     * 做一些必要的缓存以提升高频传输的性能与可靠性
      */
 
+    private int _connectCounter = 0; // 最多40个空闲帧后就必须向硬件发送一次报文，这能避免设备失联后导致的失控行为
     private const string EspIp = "192.168.43.132";
     private const int EspPort = 8080;
     private TcpClient? _tcpclient = new TcpClient();
@@ -41,8 +44,8 @@ public partial class TankViewModel
 
     [VeloxProperty] private double _leftTrack = 0d;
     [VeloxProperty] private double _rightTrack = 0d;
-    [VeloxProperty] private double _turretH = 0d;
-    [VeloxProperty] private double _turretV = 0d;
+    [VeloxProperty] private double _turretH = 0.5;
+    [VeloxProperty] private double _turretV = 0.25;
     [VeloxProperty] private bool _fire = false;
     [VeloxProperty] private bool _isContextChanged = false;
 
@@ -74,7 +77,7 @@ public partial class TankViewModel
     /// <summary>
     /// 上报坦克当前状态给到 ESP-01S 模块，使用 TCP 协议
     /// </summary>
-    /// <param name="parameter">无需填写</param>
+    /// <param name="parameter">外部传参</param>
     /// <param name="ct">取消令牌</param>
     [VeloxCommand]
     private async Task Post(object? parameter, CancellationToken ct)
@@ -92,8 +95,9 @@ public partial class TankViewModel
             _msgbuilder.Append("CSharpST{")
                 .Append(LeftTrack.ToString("0.00")).Append(',')
                 .Append(RightTrack.ToString("0.00")).Append(',')
-                .Append((15 + (TurretH * (35 - 15))).ToString("0.00")).Append(',')
-                .Append((15 + (TurretV * (35 - 15))).ToString("0.00")).Append(',')
+                .Append((15 + (TurretH * (35 - 15))).ToString("0.00")).Append(',') // 25 静止，20向右，32.5向左 ( 360舵机，瞬时切换即可 )
+                .Append((25 + (TurretV * (35 - 25))).ToString("0.00"))
+                .Append(',') // 27.5 水平，低于前倾，高于后倾 ( 非360舵机，必须逐渐变换 )
                 .Append((Fire ? 0.1 : 0.01).ToString("0.00"))
                 .Append("}CSharpED");
 

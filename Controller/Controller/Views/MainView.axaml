@@ -16,7 +16,7 @@
     <UserControl.DataContext>
         <vm:MainViewModel />
     </UserControl.DataContext>
-    <Grid RowDefinitions="*,*,*,*,*">
+    <Grid RowDefinitions="*,*,*,*,*" Background="#1e1e1e">
         <Slider Grid.Row="0" Minimum="-1" Maximum="1" Value="{Binding Tank.LeftTrack}" />
         <Slider Grid.Row="1" Minimum="-1" Maximum="1" Value="{Binding Tank.RightTrack}" />
         <Slider Grid.Row="2" Minimum="0" Maximum="1" Value="{Binding Tank.TurretH}" />

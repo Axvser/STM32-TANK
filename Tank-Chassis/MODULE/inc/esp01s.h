@@ -3,7 +3,7 @@
 #ifndef __ESP01S_H
 #define __ESP01S_H
 
-#define ESP01S_DEBUG 1
+#define ESP01S_DEBUG 0
 
 /// @brief ESP01S的数据处理回调
 /// @param data 数据指针
@@ -23,6 +23,14 @@ void ESP01S_RST(void);
 /// @brief 重置ESP01S
 void ESP01S_RESTORE(void);
 
+/// @brief 设置STA下的设备名
+/// @param name 名字
+void ESP01S_CWHOSTNAME(const char *name);
+
+/// @brief 修改设备mac
+/// @param mac 设备mac
+void ESP01S_CIPSTAMAC_CUR(const char *mac);
+
 /// @brief 设定ESP01S的波特率
 /// @param baud 波特率
 void ESP01S_UART_CUR(uint32_t baud);
@@ -32,7 +40,7 @@ void ESP01S_UART_CUR(uint32_t baud);
 void ESP01S_CWMODE(uint8_t mode);
 
 /// @brief 设置是否启用DHCP
-/// @param mode 模式 (1:Station, 2:SoftAP, 3:Both)
+/// @param mode 模式 (0:Station, 1:SoftAP)
 /// @param enable 是否启用 (0:禁用, 1:启用)
 void ESP01S_CWDHCP(uint8_t mode, uint8_t enable);
 
@@ -50,15 +58,11 @@ void ESP01S_CWJAP(const char *ssid, const char *pwd);
 
 /// @brief 配置STA
 /// @param ip IP地址
-/// @param gateway 网关
-/// @param netmask 子网掩码
-void ESP01S_CIPSTA(const char *ip, const char *gateway, const char *netmask);
+void ESP01S_CIPSTA(const char *ip);
 
 /// @brief 配置AP
 /// @param ip IP地址
-/// @param gateway 网关
-/// @param netmask 子网掩码
-void ESP01S_CIPAP(const char *ip, const char *gateway, const char *netmask);
+void ESP01S_CIPAP(const char *ip);
 
 /// @brief 配置透传模式
 /// @param mode 0 表示关闭
