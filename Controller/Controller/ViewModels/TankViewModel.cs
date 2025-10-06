@@ -21,22 +21,30 @@ public partial class TankViewModel
         if (!IsContextChanged && _connectCounter < 30) return;
         IsContextChanged = false;
         _connectCounter = 0;
+        IsConnected = _tcpclient?.Connected == true;
         PostCommand.Execute(null);
     }
 
-    /* Fields
-     * 做一些必要的缓存以提升高频传输的性能与可靠性
+    /* Net Fields
+     * 做一些必要的缓存以提升高频TCP传输的性能与可靠性
      */
 
     private int _connectCounter = 0; // 最多40个空闲帧后就必须向硬件发送一次报文，这能避免设备失联后导致的失控行为
-    private const string EspIp = "192.168.43.132";
-    private const int EspPort = 8080;
     private TcpClient? _tcpclient = new TcpClient();
     private readonly StringBuilder _msgbuilder = new StringBuilder();
     private readonly byte[] _sendBuffer = new byte[128];
     private NetworkStream? _networkStream;
 
-    /* Properties
+    /* Net Properties
+     * 有关网络连接的属性
+     */
+
+    [VeloxProperty] private bool _isConnected = false;
+    [VeloxProperty] private string _espIp = "192.168.43.132";
+    [VeloxProperty] private int _espPort = 8080;
+    [VeloxProperty] private string _cameIp = "192.168.43.69";
+
+    /* Device Properties
      * 有关设备状态的属性
      * 发送数据格式如下,保留两位小数
      * [leftTrack,rightTrack,turretH,turretV,firePower]
@@ -84,30 +92,25 @@ public partial class TankViewModel
     {
         try
         {
-            // 1. 检查连接状态，必要时重连
-            if (_tcpclient?.Connected != true)
-            {
-                await ReconnectAsync(ct).ConfigureAwait(false);
-            }
-
-            // 2. 构建消息正文（复用 StringBuilder）
+            // 1. 构建消息正文（复用 StringBuilder）
             _msgbuilder.Clear();
             _msgbuilder.Append("CSharpST{")
-                .Append(LeftTrack.ToString("0.00")).Append(',')
-                .Append(RightTrack.ToString("0.00")).Append(',')
-                .Append((15 + (TurretH * (35 - 15))).ToString("0.00")).Append(',') // 25 静止，20向右，32.5向左 ( 360舵机，瞬时切换即可 )
-                .Append((25 + (TurretV * (35 - 25))).ToString("0.00"))
-                .Append(',') // 27.5 水平，低于前倾，高于后倾 ( 非360舵机，必须逐渐变换 )
-                .Append((Fire ? 0.1 : 0.01).ToString("0.00"))
+                .Append(LeftTrack.ToString("F2")).Append(',')
+                .Append(RightTrack.ToString("F2")).Append(',')
+                .Append((15 + (TurretH * (35 - 15))).ToString("F2"))
+                .Append(',') // 25 静止，20向右，32.5向左 ( 360舵机，瞬时切换即可 )
+                .Append((25 + (TurretV * (35 - 25))).ToString("F2"))
+                .Append(',') // 27.5 水平，低于前倾，高于后倾 ( 非360舵机，建议逐渐变换 )
+                .Append((Fire ? 0.1 : 0.01).ToString("F2"))
                 .Append("}CSharpED");
 
-            // 3. 直接编码到预分配缓冲区
+            // 2. 直接编码到预分配缓冲区
             var byteCount = Encoding.UTF8.GetBytes(
                 _msgbuilder.ToString(),
                 0, _msgbuilder.Length,
                 _sendBuffer, 0);
 
-            // 4. 发送数据（复用 NetworkStream）
+            // 3. 发送数据（复用 NetworkStream）
             await ((_networkStream ??= _tcpclient?.GetStream())!)
                 .WriteAsync(_sendBuffer.AsMemory(0, byteCount), ct)
                 .ConfigureAwait(false);
@@ -115,35 +118,30 @@ public partial class TankViewModel
         catch (Exception ex)
         {
             Debug.WriteLine($"Send failed: {ex.Message}");
-            await TryReconnectAsync(ct).ConfigureAwait(false);
         }
     }
 
-    private async Task ReconnectAsync(CancellationToken ct)
-    {
-        DisposeConnection();
-        _tcpclient = new TcpClient();
-        await _tcpclient.ConnectAsync(EspIp, EspPort, ct).ConfigureAwait(false);
-        _networkStream = _tcpclient.GetStream();
-    }
-
-    private async Task TryReconnectAsync(CancellationToken ct)
+    /// <summary>
+    /// 连接Tcp服务器
+    /// </summary>
+    /// <param name="parameter">外部传参</param>
+    /// <param name="ct">取消令牌</param>
+    [VeloxCommand]
+    private async Task ConnectTcp(object? parameter, CancellationToken ct)
     {
         try
         {
-            await ReconnectAsync(ct).ConfigureAwait(false);
+            IsConnected = false;
+            await ConnectTcpCommand.InterruptAsync();
+            _tcpclient = new TcpClient();
+            await _tcpclient.ConnectAsync(EspIp, EspPort, ct).ConfigureAwait(false);
+            _networkStream = _tcpclient.GetStream();
+            IsConnected = true;
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Debug.WriteLine($"Reconnect failed: {ex.Message}");
+            Debug.WriteLine(e);
+            IsConnected = false;
         }
-    }
-
-    private void DisposeConnection()
-    {
-        _networkStream?.Dispose();
-        _tcpclient?.Dispose();
-        _networkStream = null;
-        _tcpclient = null;
     }
 }
