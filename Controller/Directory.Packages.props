@@ -14,6 +14,7 @@
     <PackageVersion Include="Avalonia.iOS" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Browser" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Android" Version="11.3.0" />
+    <PackageVersion Include="CefNet.Avalonia.Eleven" Version="105.3.22248.146" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="MQTTnet" Version="5.0.1.1416" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />

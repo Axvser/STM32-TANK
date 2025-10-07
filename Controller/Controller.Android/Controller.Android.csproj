@@ -10,7 +10,7 @@
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <AndroidSdkDirectory>E:\VisualStudio\Shared\Android\android-sdk</AndroidSdkDirectory>
-        <JavaSdkDirectory>E:\VisualStudio\Shared\Android\openjdk\jdk-17.0.14</JavaSdkDirectory>
+        <JavaSdkDirectory>E:\OpenJDK\jdk-25+36</JavaSdkDirectory>
         <RunAOTCompilation>false</RunAOTCompilation>
     </PropertyGroup>
 
