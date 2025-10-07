@@ -8,5 +8,5 @@
         x:Class="Controller.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Controller">
-        <views:MainView />
+    <views:MainView />
 </Window>

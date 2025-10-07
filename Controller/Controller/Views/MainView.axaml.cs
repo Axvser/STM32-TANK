@@ -1,56 +1,108 @@
-using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
+using Avalonia.Media;
 using CefNet.Avalonia;
+using Controller.Tools;
 using Controller.ViewModels;
 
 namespace Controller.Views;
 
 public partial class MainView : UserControl
 {
-    private readonly MainViewModel? _mainView = new();
-    
+    private readonly MainViewModel _viewModel = new();
+    private readonly WebView _webview = new() { Focusable = true,IsVisible = false};
+    private readonly ScaleTransform _webscale = new ScaleTransform(1, 1);
+    private readonly TranslateTransform _webtranslate = new TranslateTransform(0, 0);
+    private readonly HashSet<Key> _keyPressed = [];
+    private readonly HashSet<KeyModifiers> _keyModifierPressed = [];
+
     public MainView()
     {
         InitializeComponent();
-        DataContext = _mainView;
-        WebView webview = new() { Focusable = true };
-        webview.InitialUrl = "192.168.43.69";
-        Browser.Children.Add(webview);
+        InitializeWebView(_viewModel.Tank.CameIp);
+        DataContext = _viewModel;
     }
 
-    private void Fire_On(object? sender, PointerPressedEventArgs e)
+    private void InitializeWebView(string url)
     {
-        if (DataContext is MainViewModel { Tank: { } tv })
-        {
-            tv.Fire = true;
-        }
+        _webview.InitialUrl = url;
+        Browser.Children.Add(_webview);
+        _webview.RenderTransformOrigin = RelativePoint.TopLeft;
+        _webview.RenderTransform = new TransformGroup() { Children = [_webtranslate, _webscale] };
+        Loaded += async (s, e) => await OpenWebCamera();
     }
 
-    private void Fire_Off(object? sender, PointerReleasedEventArgs e)
+    private async Task OpenWebCamera()
     {
-        if (DataContext is MainViewModel { Tank: { } tv })
-        {
-            tv.Fire = false;
-        }
+        _webview.IsVisible = false;
+        await Task.Delay(200);
+        _webview.HideScrollbar();
+        await Task.Delay(200);
+        _webview.ClickElementById("toggle-stream");
+        await Task.Delay(200);
+        _webview.ClickElementById("nav-toggle");
+        _webview.IsVisible = true;
     }
 
-    private void Button_OnClick(object? sender, RoutedEventArgs e)
+    private void User_KeyDown(object? sender, KeyEventArgs e)
     {
-        if (DataContext is MainViewModel { Tank: { } tv })
-        {
-            tv.Fire = !tv.Fire;
-        }
-    }
-
-    private void User_KeyDowm(object? sender, KeyEventArgs e)
-    {
+        // 记录按下的普通键
+        _keyPressed.Add(e.Key);
         
+        // 记录按下的修饰键
+        if (e.KeyModifiers != KeyModifiers.None)
+        {
+            _keyModifierPressed.Add(e.KeyModifiers);
+        }
+
+        // 立即检查按键组合
+        CheckKeyCombinations();
     }
 
     private void User_KeyUp(object? sender, KeyEventArgs e)
     {
+        // 移除释放的普通键
+        _keyPressed.Remove(e.Key);
         
+        // 移除释放的修饰键
+        if (e.KeyModifiers != KeyModifiers.None)
+        {
+            _keyModifierPressed.Remove(e.KeyModifiers);
+        }
+
+        _viewModel.Tank.Fire = false;
+    }
+
+    private void CheckKeyCombinations()
+    {
+        // 检查Alt键是否按下
+        var altPressed = _keyModifierPressed.Contains(KeyModifiers.Alt);
+
+        if (!altPressed) return;
+        // 缩放操作
+        if (_keyPressed.Contains(Key.OemPlus))
+        {
+            _webscale.ScaleX += 0.1;
+            _webscale.ScaleY += 0.1;
+        }
+        if (_keyPressed.Contains(Key.OemMinus))
+        {
+            _webscale.ScaleX -= 0.1;
+            _webscale.ScaleY -= 0.1;
+        }
+
+        // 平移操作（支持斜向移动）
+        int deltaX = 0, deltaY = 0;
+        if (_keyPressed.Contains(Key.Left)) deltaX -= 10;
+        if (_keyPressed.Contains(Key.Right)) deltaX += 10;
+        if (_keyPressed.Contains(Key.Up)) deltaY -= 10;
+        if (_keyPressed.Contains(Key.Down)) deltaY += 10;
+
+        if (deltaX == 0 && deltaY == 0) return;
+        _webtranslate.X += deltaX;
+        _webtranslate.Y += deltaY;
     }
 }

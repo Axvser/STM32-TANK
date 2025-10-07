@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Remove="Services\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -27,6 +28,22 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\TCP\" />
+      <AvaloniaXaml Remove="Services\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Services\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Services\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Remove="Services\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Services\**" />
     </ItemGroup>
 </Project>
