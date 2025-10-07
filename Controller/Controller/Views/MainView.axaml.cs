@@ -23,7 +23,12 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
         InitializeWebView(_viewModel.Tank.CameIp);
+        KeyDown += User_KeyDown;
+        KeyUp += User_KeyUp;
         DataContext = _viewModel;
+        _viewModel.Tank.CanMonoBehaviour = true;
+        _viewModel.Tank.EDC.SubscribeToKeyboardEvents(this);
+        _viewModel.Tank.EDC.CanMonoBehaviour = true;
     }
 
     private void InitializeWebView(string url)
@@ -32,13 +37,16 @@ public partial class MainView : UserControl
         Browser.Children.Add(_webview);
         _webview.RenderTransformOrigin = RelativePoint.TopLeft;
         _webview.RenderTransform = new TransformGroup() { Children = [_webtranslate, _webscale] };
-        Loaded += async (s, e) => await OpenWebCamera();
+        Loaded += async (s, e) =>
+        {
+            await OpenWebCamera();
+        };
     }
 
     private async Task OpenWebCamera()
     {
         _webview.IsVisible = false;
-        await Task.Delay(200);
+        await Task.Delay(1000);
         _webview.HideScrollbar();
         await Task.Delay(200);
         _webview.ClickElementById("toggle-stream");
@@ -104,5 +112,24 @@ public partial class MainView : UserControl
         if (deltaX == 0 && deltaY == 0) return;
         _webtranslate.X += deltaX;
         _webtranslate.Y += deltaY;
+        
+        // 开火检测
+        _viewModel.Tank.Fire = _keyPressed.Contains(Key.J);
+        
+        // 左右转检测
+        _viewModel.Tank.TurretH = (_keyPressed.Contains(Key.Q), _keyPressed.Contains(Key.E)) switch
+        {
+            (true, false) => 32.5,
+            (false, true) => 20,
+            _ => 25
+        };
+        
+        // 上下抬检测
+        _viewModel.Tank.TurretV += (_keyPressed.Contains(Key.K), _keyPressed.Contains(Key.J)) switch
+        {
+            (true, false) => 1,
+            (false, true) => -1,
+            _ => 0
+        };
     }
 }

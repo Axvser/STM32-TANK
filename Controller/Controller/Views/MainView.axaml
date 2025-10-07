@@ -9,8 +9,6 @@
              x:DataType="vm:MainViewModel"
              Focusable="True"
              Background="#181818"
-             KeyDown="User_KeyDown"
-             KeyUp="User_KeyUp"
              FocusAdorner="{x:Null}">
     <UserControl.Styles>
         <Style Selector="TextBlock.tag">
@@ -25,6 +23,7 @@
 
     <Grid RowDefinitions="2*,2*,3*"
           ColumnDefinitions="4*,3*,4*">
+        <TextBlock Foreground="White" Text="{Binding Tank.IsConnected}" />
         <!-- 网页嵌入(Wifi图传) -->
         <Grid Grid.Row="0"
               Grid.RowSpan="2"

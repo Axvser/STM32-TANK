@@ -59,7 +59,7 @@ int main(void)
     // 60FPS - 实时性要求高
     RunTime_MonoBehaviour(60, 2, Motor_Update, &motor, Gun_Update, &gun);
     // 20FPS - 实时性要求中等
-    RunTime_MonoBehaviour(20, 1, WIFI_OnDisconnect, &tcpserver);
+    // RunTime_MonoBehaviour(20, 1, WIFI_OnDisconnect, &tcpserver);
     // 1FPS - 实时性要求低
     RunTime_MonoBehaviour(1, 0);
 
