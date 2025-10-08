@@ -126,7 +126,7 @@
     <Grid RowDefinitions="Auto,*" ColumnDefinitions="1.2*,1*" Margin="10">
         <!-- 标题 -->
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                   Text="TCP 连接控制系统"
+                   Text="局域网设备面板"
                    Foreground="White" FontSize="20" FontWeight="Bold"
                    HorizontalAlignment="Center" Margin="0,0,0,15" />
 
@@ -139,7 +139,7 @@
                 <!-- ESP IP地址 -->
                 <Border Classes="ParamBorder">
                     <StackPanel>
-                        <TextBlock Classes="ParamTitle" Text="ESP IP地址" />
+                        <TextBlock Classes="ParamTitle" Text="ESP-01s -> IP" />
                         <TextBox Classes="ParamInput"
                                  Text="{Binding EspIp, Mode=TwoWay}" />
                     </StackPanel>
@@ -148,7 +148,7 @@
                 <!-- ESP端口 -->
                 <Border Classes="ParamBorder">
                     <StackPanel>
-                        <TextBlock Classes="ParamTitle" Text="ESP端口" />
+                        <TextBlock Classes="ParamTitle" Text="ESP-01s -> Port" />
                         <TextBox Classes="ParamInput"
                                  Text="{Binding EspPort, Mode=TwoWay}" />
                     </StackPanel>
@@ -157,7 +157,7 @@
                 <!-- 摄像头IP -->
                 <Border Classes="ParamBorder">
                     <StackPanel>
-                        <TextBlock Classes="ParamTitle" Text="摄像头IP" />
+                        <TextBlock Classes="ParamTitle" Text="ESP32-S3 -> IP" />
                         <TextBox Classes="ParamInput"
                                  Text="{Binding CameIp, Mode=TwoWay}" />
                     </StackPanel>

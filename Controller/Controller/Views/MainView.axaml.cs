@@ -118,11 +118,17 @@ public partial class MainView : UserControl
         _webtranslate.X += deltaX;
         _webtranslate.Y += deltaY;
 
+        var keyJ = _keyPressed.Contains(Key.J);
+        var keyQ = _keyPressed.Contains(Key.Q);
+        var keyE = _keyPressed.Contains(Key.E);
+        var keyK = _keyPressed.Contains(Key.K);
+        var keyL = _keyPressed.Contains(Key.L);
+
         // 开火检测
-        _viewModel.Tank.Fire = _keyPressed.Contains(Key.J);
+        _viewModel.Tank.Fire = keyJ;
 
         // 左右转检测
-        _viewModel.Tank.TurretH = (_keyPressed.Contains(Key.Q), _keyPressed.Contains(Key.E)) switch
+        _viewModel.Tank.TurretH = (keyQ, keyE) switch
         {
             (true, false) => 32.5,
             (false, true) => 20,
@@ -130,18 +136,11 @@ public partial class MainView : UserControl
         };
 
         // 上下抬检测
-        _viewModel.Tank.TurretV += (_keyPressed.Contains(Key.K), _keyPressed.Contains(Key.L)) switch
+        _viewModel.Tank.TurretV += (keyK, keyL) switch
         {
-            (true, false) => 1,
-            (false, true) => -1,
+            (true, false) => 0.1,
+            (false, true) => -0.1,
             _ => 0
         };
-
-        if (_keyPressed.Contains(Key.J) || _keyPressed.Contains(Key.Q) || _keyPressed.Contains(Key.E) ||
-            _keyPressed.Contains(Key.K) ||
-            _keyPressed.Contains(Key.L))
-        {
-            _viewModel.Tank.IsContextChanged = true;
-        }
     }
 }
