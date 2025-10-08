@@ -1,0 +1,198 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Controller.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Controller.Views.EDCView"
+             x:DataType="vm:EDCViewModel">
+    <UserControl.Styles>
+        <!-- 操作按键样式 -->
+        <Style Selector="TextBlock.OperationKey">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- 操作描述文本 -->
+        <Style Selector="TextBlock.OperationDescription">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- 操作按键边框 -->
+        <Style Selector="Border.KeyBorder">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+
+        <!-- 参数卡片 -->
+        <Style Selector="Border.ParamBorder">
+            <Setter Property="BorderBrush" Value="#888" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Background" Value="#222" />
+        </Style>
+
+        <!-- 参数标题 -->
+        <Style Selector="TextBlock.ParamTitle">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <!-- 只读参数显示框 -->
+        <Style Selector="TextBox.ParamValue">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Width" Value="70" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="IsReadOnly" Value="True" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- ========== 主体布局 ========== -->
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="1*,1.2*" Margin="10">
+        <!-- 标题 -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="电子差速控制系统"
+                   Foreground="White" FontSize="20" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,15" />
+
+        <!-- 左侧：操作说明（固定） -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="5" Spacing="6">
+                <TextBlock Text="操作说明" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="W" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="前进" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="S" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="后退" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="A" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="左油门" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="D" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="右油门" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="Shift" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="大油门模式" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="Ctrl" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="定点旋转模式" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="Space" />
+                    </Border>
+                    <TextBlock Classes="OperationDescription" Text="紧急停止" Margin="8,0,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 右侧：参数调节（独立可滚动） -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="5" Spacing="8">
+
+                <!-- 速度平滑时间 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="速度平滑时间" />
+                        <Slider Minimum="0.1" Maximum="2.0"
+                                Value="{Binding VelocitySmoothTime, Mode=TwoWay}" />
+                        <TextBox Classes="ParamValue"
+                                 Text="{Binding VelocitySmoothTime, StringFormat='F2'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 加速灵敏度 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="加速灵敏度" />
+                        <Slider Minimum="0.5" Maximum="3.0"
+                                Value="{Binding AccelSharpness, Mode=TwoWay}" />
+                        <TextBox Classes="ParamValue"
+                                 Text="{Binding AccelSharpness, StringFormat='F2'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 制动灵敏度 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="制动灵敏度" />
+                        <Slider Minimum="0.5" Maximum="5.0"
+                                Value="{Binding BrakeSharpness, Mode=TwoWay}" />
+                        <TextBox Classes="ParamValue"
+                                 Text="{Binding BrakeSharpness, StringFormat='F2'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 差速转向幅度 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="差速转向幅度" />
+                        <Slider Minimum="0.1" Maximum="1.0"
+                                Value="{Binding AckermannTurnScale, Mode=TwoWay}" />
+                        <TextBox Classes="ParamValue"
+                                 Text="{Binding AckermannTurnScale, StringFormat='F2'}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 定点旋转速度 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="定点旋转速度" />
+                        <Slider Minimum="0.1" Maximum="1.0"
+                                Value="{Binding PointTurnSpeed, Mode=TwoWay}" />
+                        <TextBox Classes="ParamValue"
+                                 Text="{Binding PointTurnSpeed, StringFormat='F2'}" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

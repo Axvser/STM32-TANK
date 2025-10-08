@@ -5,23 +5,22 @@ using VeloxDev.Core.Mono;
 using VeloxDev.Core.MVVM;
 using VeloxDev.Core.WeakTypes;
 
-namespace Controller.Tools;
+namespace Controller.ViewModels;
 
 /// <summary>
-/// 接收来自 EDC 系统的速度更新
+/// 接收来自 EDC 系统的更新帧
 /// </summary>
 public delegate void EDCFrameHandler(double leftVelocity, double rightVelocity);
 
 /// <summary>
 /// Electronic Differential Control (电子差速控制)
-/// 完整仿真版 v4.0
 /// - 所有运动均为平滑渐变
 /// - 小油门/大油门 (Shift) 行为不同 (幅值与响应时间)
 /// - W/A/S/D 支持任意组合（互抵为 0）
 /// - Ctrl 开启定点旋转（忽略 W/S），否则为差速（同向）转向
 /// </summary>
 [MonoBehaviour]
-public partial class EDC
+public partial class EDCViewModel
 {
     public readonly WeakDelegate<EDCFrameHandler> FixedUpdate = new();
 

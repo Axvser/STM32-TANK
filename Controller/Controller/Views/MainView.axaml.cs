@@ -7,13 +7,15 @@ using Avalonia.Media;
 using CefNet.Avalonia;
 using Controller.Tools;
 using Controller.ViewModels;
+using VeloxDev.Core.Mono;
 
 namespace Controller.Views;
 
+[MonoBehaviour]
 public partial class MainView : UserControl
 {
     private readonly MainViewModel _viewModel = new();
-    private readonly WebView _webview = new() { Focusable = true,IsVisible = false};
+    private readonly WebView _webview = new() { Focusable = true, IsVisible = false };
     private readonly ScaleTransform _webscale = new ScaleTransform(1, 1);
     private readonly TranslateTransform _webtranslate = new TranslateTransform(0, 0);
     private readonly HashSet<Key> _keyPressed = [];
@@ -23,12 +25,19 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
         InitializeWebView(_viewModel.Tank.CameIp);
-        KeyDown += User_KeyDown;
-        KeyUp += User_KeyUp;
         DataContext = _viewModel;
+        TcpView.DataContext = _viewModel.Tank;
+        EdcView.DataContext = _viewModel.Tank.EDC;
         _viewModel.Tank.CanMonoBehaviour = true;
         _viewModel.Tank.EDC.SubscribeToKeyboardEvents(this);
+        KeyDown += User_KeyDown;
+        KeyUp += User_KeyUp;
         _viewModel.Tank.EDC.CanMonoBehaviour = true;
+    }
+
+    partial void Update()
+    {
+        CheckKeyCombinations();
     }
 
     private void InitializeWebView(string url)
@@ -40,6 +49,7 @@ public partial class MainView : UserControl
         Loaded += async (s, e) =>
         {
             await OpenWebCamera();
+            CanMonoBehaviour = true;
         };
     }
 
@@ -59,22 +69,19 @@ public partial class MainView : UserControl
     {
         // 记录按下的普通键
         _keyPressed.Add(e.Key);
-        
+
         // 记录按下的修饰键
         if (e.KeyModifiers != KeyModifiers.None)
         {
             _keyModifierPressed.Add(e.KeyModifiers);
         }
-
-        // 立即检查按键组合
-        CheckKeyCombinations();
     }
 
     private void User_KeyUp(object? sender, KeyEventArgs e)
     {
         // 移除释放的普通键
         _keyPressed.Remove(e.Key);
-        
+
         // 移除释放的修饰键
         if (e.KeyModifiers != KeyModifiers.None)
         {
@@ -86,17 +93,16 @@ public partial class MainView : UserControl
 
     private void CheckKeyCombinations()
     {
-        // 检查Alt键是否按下
-        var altPressed = _keyModifierPressed.Contains(KeyModifiers.Alt);
+        var alt = _keyModifierPressed.Contains(KeyModifiers.Alt);
 
-        if (!altPressed) return;
         // 缩放操作
-        if (_keyPressed.Contains(Key.OemPlus))
+        if (alt && _keyPressed.Contains(Key.OemPlus))
         {
             _webscale.ScaleX += 0.1;
             _webscale.ScaleY += 0.1;
         }
-        if (_keyPressed.Contains(Key.OemMinus))
+
+        if (alt && _keyPressed.Contains(Key.OemMinus))
         {
             _webscale.ScaleX -= 0.1;
             _webscale.ScaleY -= 0.1;
@@ -104,18 +110,17 @@ public partial class MainView : UserControl
 
         // 平移操作（支持斜向移动）
         int deltaX = 0, deltaY = 0;
-        if (_keyPressed.Contains(Key.Left)) deltaX -= 10;
-        if (_keyPressed.Contains(Key.Right)) deltaX += 10;
-        if (_keyPressed.Contains(Key.Up)) deltaY -= 10;
-        if (_keyPressed.Contains(Key.Down)) deltaY += 10;
+        if (alt && _keyPressed.Contains(Key.Left)) deltaX -= 10;
+        if (alt && _keyPressed.Contains(Key.Right)) deltaX += 10;
+        if (alt && _keyPressed.Contains(Key.Up)) deltaY -= 10;
+        if (alt && _keyPressed.Contains(Key.Down)) deltaY += 10;
 
-        if (deltaX == 0 && deltaY == 0) return;
         _webtranslate.X += deltaX;
         _webtranslate.Y += deltaY;
-        
+
         // 开火检测
         _viewModel.Tank.Fire = _keyPressed.Contains(Key.J);
-        
+
         // 左右转检测
         _viewModel.Tank.TurretH = (_keyPressed.Contains(Key.Q), _keyPressed.Contains(Key.E)) switch
         {
@@ -123,13 +128,20 @@ public partial class MainView : UserControl
             (false, true) => 20,
             _ => 25
         };
-        
+
         // 上下抬检测
-        _viewModel.Tank.TurretV += (_keyPressed.Contains(Key.K), _keyPressed.Contains(Key.J)) switch
+        _viewModel.Tank.TurretV += (_keyPressed.Contains(Key.K), _keyPressed.Contains(Key.L)) switch
         {
             (true, false) => 1,
             (false, true) => -1,
             _ => 0
         };
+
+        if (_keyPressed.Contains(Key.J) || _keyPressed.Contains(Key.Q) || _keyPressed.Contains(Key.E) ||
+            _keyPressed.Contains(Key.K) ||
+            _keyPressed.Contains(Key.L))
+        {
+            _viewModel.Tank.IsContextChanged = true;
+        }
     }
 }

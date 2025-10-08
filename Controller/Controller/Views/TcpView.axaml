@@ -1,0 +1,230 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:vm="clr-namespace:Controller.ViewModels"
+             x:Class="Controller.Views.TcpView"
+             x:DataType="vm:TankViewModel">
+    <UserControl.Styles>
+        <!-- 操作按键样式 -->
+        <Style Selector="TextBlock.OperationKey">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- 操作描述文本 -->
+        <Style Selector="TextBlock.OperationDescription">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- 操作按键边框 -->
+        <Style Selector="Border.KeyBorder">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <!-- 参数卡片 -->
+        <Style Selector="Border.ParamBorder">
+            <Setter Property="BorderBrush" Value="#888" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Background" Value="#222" />
+        </Style>
+
+        <!-- 参数标题 -->
+        <Style Selector="TextBlock.ParamTitle">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <!-- 参数输入框 -->
+        <Style Selector="TextBox.ParamInput">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Width" Value="120" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <!-- 连接状态指示器 -->
+        <Style Selector="Ellipse.StatusIndicator">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Fill" Value="Gray" />
+        </Style>
+
+        <Style Selector="Ellipse.StatusIndicator.connected">
+            <Setter Property="Fill" Value="Green" />
+        </Style>
+
+        <Style Selector="Ellipse.StatusIndicator.disconnected">
+            <Setter Property="Fill" Value="Red" />
+        </Style>
+
+        <!-- 连接状态文本 -->
+        <Style Selector="TextBlock.StatusText">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="5,0" />
+        </Style>
+
+        <Style Selector="TextBlock.StatusText.connected">
+            <Setter Property="Text" Value="已连接" />
+        </Style>
+
+        <Style Selector="TextBlock.StatusText.disconnected">
+            <Setter Property="Text" Value="未连接" />
+        </Style>
+
+        <!-- 开火状态文本 -->
+        <Style Selector="TextBlock.FireStatusText">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.FireStatusText.firing">
+            <Setter Property="Text" Value="开火中" />
+        </Style>
+
+        <Style Selector="TextBlock.FireStatusText.ready">
+            <Setter Property="Text" Value="待机" />
+        </Style>
+
+        <!-- 连接按钮 -->
+        <Style Selector="Button.ConnectButton">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#444" />
+            <Setter Property="BorderBrush" Value="#888" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- ========== 主体布局 ========== -->
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="1.2*,1*" Margin="10">
+        <!-- 标题 -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Text="TCP 连接控制系统"
+                   Foreground="White" FontSize="20" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,0,0,15" />
+
+        <!-- 左侧：参数调节（独立可滚动） -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="5" Spacing="8">
+
+                <!-- ESP IP地址 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="ESP IP地址" />
+                        <TextBox Classes="ParamInput"
+                                 Text="{Binding EspIp, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ESP端口 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="ESP端口" />
+                        <TextBox Classes="ParamInput"
+                                 Text="{Binding EspPort, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 摄像头IP -->
+                <Border Classes="ParamBorder">
+                    <StackPanel>
+                        <TextBlock Classes="ParamTitle" Text="摄像头IP" />
+                        <TextBox Classes="ParamInput"
+                                 Text="{Binding CameIp, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 连接状态 -->
+                <Border Classes="ParamBorder">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Classes="ParamTitle" Text="连接状态:" />
+                        <Ellipse Classes="StatusIndicator"
+                                 Classes.connected="{Binding IsConnected}" />
+                        <TextBlock Classes="StatusText"
+                                   Classes.connected="{Binding IsConnected}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 右侧：操作说明（固定） -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="5" Spacing="6">
+                <TextBlock Text="操作说明" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Right" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="炮塔左转" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="Q" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="炮塔右转" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="E" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="炮塔上抬" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="K" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="炮塔下压" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="L" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="开火" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="J" />
+                    </Border>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Classes="OperationDescription" Text="重连" Margin="0,0,8,0" />
+                    <Border Classes="KeyBorder">
+                        <TextBlock Classes="OperationKey" Text="R" />
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

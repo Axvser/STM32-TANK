@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Controller.Tools;
 using VeloxDev.Core.Mono;
 using VeloxDev.Core.MVVM;
 
@@ -13,7 +12,7 @@ namespace Controller.ViewModels;
 [MonoBehaviour(60)]
 public partial class TankViewModel
 {
-    [VeloxProperty] private EDC _eDC = new();
+    [VeloxProperty] private EDCViewModel _eDC = new();
 
     public TankViewModel()
     {
@@ -112,10 +111,12 @@ public partial class TankViewModel
             _msgbuilder.Append("CSharpST{")
                 .Append(LeftTrack.ToString("0.00")).Append(',')
                 .Append(RightTrack.ToString("0.00")).Append(',')
-                .Append((15 + (TurretH * (35 - 15))).ToString("0.00")).Append(',')
-                .Append((25 + (TurretV * (35 - 25))).ToString("0.00")).Append(',')
+                .Append(TurretH.ToString("0.00")).Append(',')
+                .Append(TurretV.ToString("0.00")).Append(',')
                 .Append((Fire ? 0.1 : 0.01).ToString("0.00"))
                 .Append("}CSharpED");
+            
+            Console.WriteLine(_msgbuilder.ToString());
 
             var count = Encoding.UTF8.GetBytes(_msgbuilder.ToString(), 0, _msgbuilder.Length, _sendBuffer, 0);
             await _networkStream!.WriteAsync(_sendBuffer.AsMemory(0, count), ct);

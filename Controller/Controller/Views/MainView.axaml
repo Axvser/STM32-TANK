@@ -23,23 +23,18 @@
 
     <Grid RowDefinitions="2*,2*,3*"
           ColumnDefinitions="4*,3*,4*">
-        <TextBlock Foreground="White" Text="{Binding Tank.IsConnected}" />
-        <!-- 网页嵌入(Wifi图传) -->
+        <!-- 网页嵌入(Wifi图传查看) -->
         <Grid Grid.Row="0"
               Grid.RowSpan="2"
               Grid.Column="1"
               x:Name="Browser" />
         <!-- 设备连接选项 -->
-        <Grid Grid.Row="2"
-              Grid.Column="1"
-              RowDefinitions="1*,1*,3*,1*,3*,1*,3*,3*">
-            <TextBlock Grid.Row="1" Text="Tank -> IP" Classes="tag" />
-            <TextBox Grid.Row="2" Text="{Binding Tank.EspIp}" Watermark="Enter the IP of Tank" />
-            <TextBlock Grid.Row="3" Text="Tank -> Port" Classes="tag" />
-            <TextBox Grid.Row="4" Text="{Binding Tank.EspPort}" Watermark="Enter the Port of Tank" />
-            <TextBlock Grid.Row="5" Text="Camera -> IP" Classes="tag" />
-            <TextBox Grid.Row="6" Text="{Binding Tank.CameIp}" Watermark="Enter the IP of Came" />
+        <Grid Grid.Row="0"
+              Grid.RowSpan="2"
+              Grid.Column="0">
+            <views:TcpView x:Name="TcpView" />
         </Grid>
+        <!-- 速度表 -->
         <views:ArcGauge x:Name="LeftArcGauge"
                         Grid.Row="2"
                         Grid.Column="0"
@@ -54,5 +49,7 @@
                         MaxValue="1"
                         Background="Transparent"
                         Value="{Binding Tank.RightTrack}" />
+        <!-- 参数调教 -->
+        <views:EDCView Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" x:Name="EdcView" />
     </Grid>
 </UserControl>
