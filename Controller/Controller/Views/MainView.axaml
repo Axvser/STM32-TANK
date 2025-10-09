@@ -51,9 +51,5 @@
                         Value="{Binding Tank.RightTrack}" />
         <!-- 参数调教 -->
         <views:EDCView Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" x:Name="EdcView" />
-        <!-- 方向指示器 -->
-        <Grid Grid.Row="2" Grid.Column="1">
-            
-        </Grid>
     </Grid>
 </UserControl>
