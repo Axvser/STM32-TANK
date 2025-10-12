@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
@@ -14,8 +15,9 @@ namespace Controller.Views;
 [MonoBehaviour]
 public partial class MainView : UserControl
 {
+    private static readonly bool Ope = OperatingSystem.IsWindows();
     private readonly MainViewModel _viewModel = new();
-    private readonly WebView _webview = new() { Focusable = true, IsVisible = false };
+    private readonly WebView _webview = new() { Focusable = false, IsVisible = false };
     private readonly ScaleTransform _webscale = new ScaleTransform(1, 1);
     private readonly TranslateTransform _webtranslate = new TranslateTransform(0, 0);
     private readonly HashSet<Key> _keyPressed = [];
@@ -42,6 +44,7 @@ public partial class MainView : UserControl
 
     private void InitializeWebView(string url)
     {
+        if (!Ope) return;
         _webview.InitialUrl = url;
         Browser.Children.Add(_webview);
         _webview.RenderTransformOrigin = RelativePoint.TopLeft;

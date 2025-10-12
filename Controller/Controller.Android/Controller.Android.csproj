@@ -11,17 +11,19 @@
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <AndroidSdkDirectory>E:\VisualStudio\Shared\Android\android-sdk</AndroidSdkDirectory>
         <JavaSdkDirectory>E:\VisualStudio\Shared\Android\openjdk\jdk-17.0.14</JavaSdkDirectory>
-        <RunAOTCompilation>false</RunAOTCompilation>
     </PropertyGroup>
 
     <ItemGroup>
         <AndroidResource Include="Icon.png">
             <Link>Resources\drawable\Icon.png</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </AndroidResource>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Android"/>
+        <PackageReference Include="HarfBuzzSharp.NativeAssets.Android" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Android" />
         <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen"/>
     </ItemGroup>
 

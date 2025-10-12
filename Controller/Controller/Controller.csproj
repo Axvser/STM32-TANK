@@ -25,6 +25,8 @@
         <PackageReference Include="MQTTnet" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="VeloxDev.Avalonia"/>
+        <PackageReference Include="VeloxDev.Core" />
+        <PackageReference Include="VeloxDev.Core.Generator" PrivateAssets="All"/>
     </ItemGroup>
 
     <ItemGroup>

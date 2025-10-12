@@ -9,6 +9,7 @@ namespace Controller.Android;
     Label = "Controller.Android",
     Theme = "@style/MyTheme.NoActionBar",
     Icon = "@drawable/icon",
+    ScreenOrientation = ScreenOrientation.UserLandscape,
     MainLauncher = true,
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 public class MainActivity : AvaloniaMainActivity<App>

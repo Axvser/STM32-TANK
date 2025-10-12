@@ -16,9 +16,13 @@
     <PackageVersion Include="Avalonia.Android" Version="11.3.0" />
     <PackageVersion Include="CefNet.Avalonia.Eleven" Version="105.3.22248.146" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageVersion Include="HarfBuzzSharp.NativeAssets.Android" Version="7.3.0.3" />
     <PackageVersion Include="MQTTnet" Version="5.0.1.1416" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Android" Version="2.88.9" />
     <PackageVersion Include="VeloxDev.Avalonia" Version="2.1.4" />
+    <PackageVersion Include="VeloxDev.Core" Version="2.1.4" />
+    <PackageVersion Include="VeloxDev.Core.Generator" Version="2.3.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
   </ItemGroup>
 </Project>
